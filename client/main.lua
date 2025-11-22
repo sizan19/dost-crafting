@@ -36,20 +36,34 @@ end)
 function InitializeWorkbenches()
     for i, workbench in ipairs(Config.Workbenches) do
         local coords = workbench.coords
-        local workbenchConfig = Config.WorkbenchTypes[workbench.workbenchType]
-        
+
+        -- Handle workbenchType being either a string or table
+        local primaryType = workbench.workbenchType
+        if type(primaryType) == 'table' then
+            primaryType = primaryType[1] -- Use first type for config lookup
+        end
+
+        local workbenchConfig = Config.WorkbenchTypes[primaryType]
+
+        if not workbenchConfig then
+            print('[dost_crafting] Warning: No config found for workbench type: ' .. tostring(primaryType))
+            goto continue
+        end
+
         -- Spawn workbench prop
         if workbenchConfig.prop then
             SpawnWorkbenchProp(workbench, workbenchConfig, i)
         end
-        
+
         -- Create blip if enabled
         if workbench.blip then
             CreateWorkbenchBlip(workbench, workbenchConfig)
         end
-        
+
         -- Add QB-Target integration
         AddWorkbenchTarget(workbench, workbenchConfig, i)
+
+        ::continue::
     end
 end
 
@@ -143,22 +157,46 @@ end
 RegisterNetEvent('dost_crafting:openWorkbench')
 AddEventHandler('dost_crafting:openWorkbench', function(data)
     local workbenchType = data.workbenchType
-    
+
     if CanAccessWorkbenchByType(workbenchType) then
-        TriggerServerEvent("dost_crafting:getWorkbenchRecipes", workbenchType)
+        -- If workbenchType is a table (multiple types), use multi-workbench event
+        if type(workbenchType) == 'table' then
+            TriggerServerEvent("dost_crafting:getMultiWorkbenchRecipes", workbenchType)
+        else
+            TriggerServerEvent("dost_crafting:getWorkbenchRecipes", workbenchType)
+        end
     else
         QBCore.Functions.Notify(Config.Text['wrong_job'], 'error')
     end
 end)
 
--- Check access by workbench type
+-- Check access by workbench type (handles both string and table types)
 function CanAccessWorkbenchByType(workbenchType)
     for _, workbench in ipairs(Config.Workbenches) do
-        if workbench.workbenchType == workbenchType then
+        local wbType = workbench.workbenchType
+
+        -- Check if types match (handle both string and table comparisons)
+        local matches = false
+        if type(wbType) == 'table' and type(workbenchType) == 'table' then
+            -- Both are tables, check if they have same first element
+            matches = (wbType[1] == workbenchType[1])
+        elseif type(wbType) == 'string' and type(workbenchType) == 'string' then
+            matches = (wbType == workbenchType)
+        elseif type(wbType) == 'table' and type(workbenchType) == 'string' then
+            -- Check if string is in the table
+            for _, t in ipairs(wbType) do
+                if t == workbenchType then
+                    matches = true
+                    break
+                end
+            end
+        end
+
+        if matches then
             return CanAccessWorkbench(workbench)
         end
     end
-    return false
+    return true -- Default allow if no matching workbench config found
 end
 
 -- Legacy function for distance checking
