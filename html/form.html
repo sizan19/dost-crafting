@@ -3,40 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FiveM Crafting System</title>
-    <script src="jquery-3.4.1.min.js" type="text/javascript"></script>
-    <script src="script.js" type="text/javascript"></script>
+    <title>Crafting System</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css.css" type="text/css">
-    <script src="https://kit.fontawesome.com/78879dfdec.js" crossorigin="anonymous"></script>
-    
-    <!-- Optimized Audio -->
+
+    <!-- jQuery -->
+    <script src="jquery-3.4.1.min.js" type="text/javascript"></script>
+
+    <!-- Audio Elements -->
     <audio id="clickaudio" preload="none" volume="0.08"></audio>
     <audio id="successaudio" preload="none" volume="0.15"></audio>
     <audio id="erroraudio" preload="none" volume="0.12"></audio>
 </head>
 <body>
     <div class="main-wrapper" id="app-container" style="display: none;">
-        
-        <!-- Notifications Area -->
-        <div class="notification-zone" id="notifications"></div>
 
-        <!-- Right Sidebar Container -->
+        <!-- Toast Notifications -->
+        <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" id="notifications"></div>
+
+        <!-- Main Crafting Panel -->
         <div class="crafting-sidebar">
-            
-            <!-- Header Section -->
+
+            <!-- Header -->
             <div class="sidebar-header">
-                <div class="title-section">
-                    <h1>RECIPES</h1>
-                    <span class="workbench-name" id="workbench-title">WORKBENCH</span>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h1 class="h4 fw-bold mb-1 text-white">RECIPES</h1>
+                        <span class="badge bg-primary text-uppercase" id="workbench-title">WORKBENCH</span>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="closeUI()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="search-section">
-                    <input type="text" id="search-input" placeholder="Search recipes...">
-                    <div class="filter-icon"><i class="fas fa-filter"></i></div>
+
+                <!-- Search -->
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control bg-dark border-secondary text-white"
+                           id="search-input" placeholder="Search recipes...">
                 </div>
             </div>
 
-            <!-- Categories/Tabs (Optional, can be added if needed, for now just grid) -->
-            
             <!-- Recipe Grid -->
             <div class="recipe-grid-wrapper">
                 <div class="recipe-grid" id="main_container">
@@ -44,33 +63,33 @@
                 </div>
             </div>
 
-            <!-- Active Recipe Details Panel -->
+            <!-- Details Panel -->
             <div class="details-panel" id="details-panel">
-                <div class="empty-state">
-                    <i class="fas fa-cube"></i>
-                    <p>Select an item to view details</p>
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-cube fa-3x text-muted opacity-25 mb-3"></i>
+                    <p class="text-muted mb-0">Select an item to view details</p>
                 </div>
-                <!-- Injected Content -->
             </div>
 
         </div>
 
-        <!-- Queue Container (Floating on left of sidebar or integrated) -->
-        <!-- Reference image shows queue is not clearly visible or maybe it's the notification? 
-             The reference image shows "Notification: Item added to crafting queue".
-             But original had a queue list. I'll keep the queue list but style it nicely, maybe floating near the sidebar. -->
-        <div class="queue-panel" id="queue-panel">
-            <div class="queue-header">
-                <span>Queue</span>
-                <span class="queue-count" id="queue-count">0</span>
+        <!-- Queue Panel -->
+        <div class="queue-panel card" id="queue-panel">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <span class="fw-semibold"><i class="fas fa-list-ul me-2"></i>Queue</span>
+                <span class="badge bg-primary rounded-pill" id="queue-count">0</span>
             </div>
-            <div class="queue-list" id="queue-items"></div>
+            <div class="card-body p-2" id="queue-items">
+                <!-- Queue items injected here -->
+            </div>
         </div>
 
     </div>
 
-    <div class="loading-screen" id="loading-overlay" style="display: none;">
-        <div class="spinner"></div>
-    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Script -->
+    <script src="script.js" type="text/javascript"></script>
 </body>
 </html>

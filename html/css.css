@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
     --bg-dark: #0f111a;
     --bg-panel: #161925;
@@ -37,96 +35,48 @@ body {
     height: 100vh;
     display: flex;
     justify-content: flex-end;
-    /* Right align */
-    background: rgba(0, 0, 0, 0.4);
-    /* Dim background */
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
 }
 
 /* Sidebar */
 .crafting-sidebar {
-    width: 500px;
+    width: 480px;
     height: 100%;
     background: var(--bg-dark);
     display: flex;
     flex-direction: column;
-    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
     border-left: 1px solid var(--border);
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn 0.25s ease-out;
 }
 
 @keyframes slideIn {
     from {
         transform: translateX(100%);
+        opacity: 0;
     }
-
     to {
         transform: translateX(0);
+        opacity: 1;
     }
 }
 
 /* Header */
 .sidebar-header {
-    padding: 2rem;
-    background: var(--bg-panel);
+    padding: 1.5rem;
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
     border-bottom: 1px solid var(--border);
 }
 
-.title-section h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--text-main);
+/* Override Bootstrap form controls */
+.form-control:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25) !important;
 }
 
-.workbench-name {
-    font-size: 0.85rem;
-    color: var(--primary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.search-section {
-    margin-top: 1.5rem;
-    position: relative;
-    display: flex;
-    gap: 10px;
-}
-
-#search-input {
-    flex: 1;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 10px 15px;
-    border-radius: 6px;
-    color: var(--text-main);
-    font-family: inherit;
-    outline: none;
-    transition: all 0.2s;
-}
-
-#search-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-.filter-icon {
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.filter-icon:hover {
-    color: var(--primary);
-    border-color: var(--primary);
+.input-group-text {
+    border-color: var(--border) !important;
 }
 
 /* Recipe Grid */
@@ -134,54 +84,59 @@ body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .recipe-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
 }
 
 .recipe-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     position: relative;
 }
 
 .recipe-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
+    background: var(--bg-panel);
 }
 
 .recipe-card.selected {
     border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
-    box-shadow: 0 0 0 1px var(--primary);
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 1px var(--primary), 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .recipe-icon {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     margin-bottom: 8px;
-    transition: filter 0.3s;
+    transition: all 0.2s;
+}
+
+.recipe-card:hover .recipe-icon {
+    transform: scale(1.1);
 }
 
 .recipe-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-align: center;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-muted);
     width: 100%;
     white-space: nowrap;
@@ -191,35 +146,37 @@ body {
 
 .recipe-badge {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    background: var(--bg-dark);
-    font-size: 0.65rem;
+    top: 6px;
+    right: 6px;
+    background: var(--primary);
+    font-size: 0.6rem;
     padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--text-muted);
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
 }
 
 /* Locked State */
 .recipe-card.locked {
-    opacity: 0.7;
-    border-color: transparent;
+    opacity: 0.5;
 }
 
 .recipe-card.locked .recipe-icon {
-    filter: grayscale(100%) opacity(0.6);
+    filter: grayscale(100%) opacity(0.5);
 }
 
 .recipe-card.locked:hover {
     border-color: var(--danger);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
 }
 
 /* Details Panel */
 .details-panel {
-    height: 380px;
+    min-height: 320px;
+    max-height: 380px;
     background: var(--bg-panel);
     border-top: 1px solid var(--border);
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
 }
@@ -230,38 +187,34 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
-    gap: 1rem;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    opacity: 0.2;
 }
 
 .detail-header {
     margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
 }
 
 .detail-title h2 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--text-main);
 }
 
 .detail-meta {
     display: flex;
     gap: 15px;
-    margin-top: 5px;
+    margin-top: 6px;
+}
+
+.meta-item {
     font-size: 0.8rem;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .meta-item i {
-    margin-right: 5px;
     color: var(--primary);
 }
 
@@ -269,47 +222,47 @@ body {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 1rem;
-    padding-right: 5px;
 }
 
 .ingredient-row {
     display: flex;
     align-items: center;
-    padding: 8px;
+    padding: 10px 12px;
     background: var(--bg-dark);
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 6px;
     border: 1px solid transparent;
+    transition: all 0.2s;
 }
 
 .ingredient-row.missing {
-    border-color: rgba(239, 68, 68, 0.3);
-    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.08);
 }
 
 .ingredient-row.has-enough {
-    border-color: rgba(16, 185, 129, 0.3);
-    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.08);
 }
 
 .ing-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    margin-right: 10px;
+    margin-right: 12px;
 }
 
 .ing-name {
     flex: 1;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
 .ing-count {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .ing-count.red {
@@ -330,33 +283,36 @@ body {
     display: flex;
     align-items: center;
     background: var(--bg-dark);
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     overflow: hidden;
 }
 
 .qty-btn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border: none;
     background: transparent;
     color: var(--text-main);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.15s;
+    font-size: 1rem;
 }
 
 .qty-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--primary);
+    color: white;
 }
 
 .qty-input {
-    width: 40px;
-    height: 36px;
+    width: 45px;
+    height: 38px;
     background: transparent;
     border: none;
     text-align: center;
     color: var(--text-main);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.95rem;
     -moz-appearance: textfield;
 }
 
@@ -368,87 +324,91 @@ body {
 
 .craft-btn {
     flex: 1;
-    background: var(--primary);
+    height: 38px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .craft-btn:hover:not(:disabled) {
-    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.craft-btn:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .craft-btn:disabled {
     background: var(--bg-card);
     color: var(--text-muted);
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 /* Queue Panel */
 .queue-panel {
     position: absolute;
-    right: 505px;
-    /* Left of sidebar */
+    right: 490px;
     top: 20px;
-    width: 280px;
-    background: var(--bg-panel);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    width: 260px;
+    background: var(--bg-panel) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     display: none;
-    /* Hidden by default */
+    animation: fadeIn 0.2s ease;
 }
 
-.queue-header {
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 0.9rem;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.queue-count {
-    background: var(--primary);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.75rem;
+.queue-panel .card-header {
+    background: var(--bg-dark) !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--text-main);
 }
 
-.queue-list {
-    padding: 10px;
+.queue-panel .card-body {
+    background: var(--bg-panel);
     max-height: 300px;
     overflow-y: auto;
 }
 
 .queue-item {
     background: var(--bg-dark);
-    border-radius: 6px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 10px 12px;
     margin-bottom: 8px;
-    position: relative;
-    overflow: hidden;
+}
+
+.queue-item:last-child {
+    margin-bottom: 0;
 }
 
 .q-info {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 0.85rem;
-    position: relative;
-    z-index: 2;
+    margin-bottom: 8px;
 }
 
 .q-name {
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-main);
 }
 
 .q-time {
@@ -459,46 +419,62 @@ body {
 .q-progress-bg {
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    position: relative;
-    z-index: 2;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .q-progress-bar {
     height: 100%;
-    background: var(--primary);
-    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    border-radius: 4px;
     transition: width 1s linear;
 }
 
-/* Notifications */
-.notification-zone {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 100;
+/* Bootstrap Toast Overrides */
+.toast {
+    background: var(--bg-panel) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(10px);
+    animation: slideDown 0.3s ease-out;
 }
 
+.toast-body {
+    color: var(--text-main) !important;
+    font-size: 0.9rem;
+}
+
+.toast .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Legacy Notifications (fallback) */
 .notification {
     background: var(--bg-panel);
     border: 1px solid var(--border);
-    padding: 12px 20px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     color: var(--text-main);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     animation: slideDown 0.3s ease-out;
-    min-width: 300px;
+    min-width: 280px;
+    backdrop-filter: blur(10px);
+}
+
+.notification.success {
+    border-color: var(--success);
 }
 
 .notification.success i {
     color: var(--success);
+}
+
+.notification.error {
+    border-color: var(--danger);
 }
 
 .notification.error i {
@@ -518,16 +494,15 @@ body {
         transform: translateY(-20px);
         opacity: 0;
     }
-
     to {
         transform: translateY(0);
         opacity: 1;
     }
 }
 
-/* Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -541,4 +516,37 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
+}
+
+/* Bootstrap Overrides for Dark Theme */
+.btn-outline-secondary {
+    color: var(--text-muted);
+    border-color: var(--border);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--bg-card);
+    border-color: var(--text-muted);
+    color: var(--text-main);
+}
+
+.badge.bg-primary {
+    background: var(--primary) !important;
+}
+
+/* Smooth transitions */
+* {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+}
+
+/* Focus states */
+*:focus {
+    outline: none;
+}
+
+input:focus,
+button:focus {
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
