@@ -66,11 +66,8 @@ function showUI() {
 }
 
 function closeUI() {
-    console.log('[dost_crafting] closeUI called');
     $("#app-container").fadeOut(200);
-    $.post('https://dost-crafting/close', JSON.stringify({}))
-        .done(function() { console.log('[dost_crafting] close callback success'); })
-        .fail(function() { console.log('[dost_crafting] close callback failed'); });
+    $.post('https://dost-crafting/close', JSON.stringify({}));
     currentRecipe = null;
     $("#details-panel").html(`
         <div class="empty-state">
@@ -124,10 +121,6 @@ function renderRecipes(filter = "") {
 }
 
 function checkRequirements(item, key) {
-    // Simplified check based on available data
-    // Note: Level system seems to be removed/simplified in main.lua, relying on skills/jobs
-    // We'll check job, grade, and ingredients
-    
     let canCraft = true;
     let reason = "";
     
@@ -253,35 +246,23 @@ function adjustQty(delta, max) {
 
 function startCraft() {
     if (!currentRecipe) return;
-    
+
     const qty = parseInt($("#craft-qty").val()) || 1;
     const item = recipes[currentRecipe];
-    
-    // Frontend loop for bulk crafting
-    // We will add to queue locally and send requests to server
-    // Note: Server expects one request per craft usually, or we can send one request and server handles loop?
-    // The plan said "looping in the frontend".
-    // However, we need to be careful not to spam server if it has checks.
-    // The server has a queue system. If we send 5 requests, it adds 5 items to queue.
-    
+
     for (let i = 0; i < qty; i++) {
         $.post('https://dost-crafting/craft', JSON.stringify({ item: currentRecipe }));
     }
-    
+
     Notify.show(`Added ${qty}x to queue`, 'success');
-    
-    // Optimistically update inventory for display?
-    // It's complex because we don't know if server accepted it.
-    // But we can deduct temporarily to update the "max craftable" display.
-    // For now, let's just rely on server updates or leave it.
-    // Actually, let's update local inventory to prevent "infinite" crafting attempts visually
+
+    // Update local inventory to reflect pending crafts
     if (item.Ingredients) {
         for (const [ing, amount] of Object.entries(item.Ingredients)) {
             if (inventory[ing]) inventory[ing] -= (amount * qty);
         }
     }
-    
-    // Re-render details to update counts/buttons
+
     const req = checkRequirements(item, currentRecipe);
     renderDetails(currentRecipe, item, (names[currentRecipe] || currentRecipe).toUpperCase(), req);
 }
@@ -300,11 +281,7 @@ function updateQueuePanel() {
     
     panel.fadeIn();
     list.empty();
-    
-    // Sort by time remaining? Or just list them.
-    // Queue is an object in this script, but server sends "addqueue" events.
-    // We need to sync with server events.
-    
+
     for (const [id, data] of Object.entries(craftingQueue)) {
         const percent = ((data.totalTime - data.time) / data.totalTime) * 100;
         
@@ -336,22 +313,19 @@ $(document).ready(() => {
         renderRecipes($(this).val());
     });
 
-    // Handle escape key - use keydown for immediate response
+    // Handle escape key
     $(document).on('keydown keyup', function(e) {
         if (e.key === "Escape" || e.keyCode === 27) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('[dost_crafting] ESC key detected in JS');
             closeUI();
             return false;
         }
     });
 
-    // Also listen on window level
     window.addEventListener('keydown', function(e) {
         if (e.key === "Escape" || e.keyCode === 27) {
             e.preventDefault();
-            console.log('[dost_crafting] ESC key detected on window');
             closeUI();
         }
     }, true);
@@ -373,45 +347,23 @@ window.addEventListener('message', (event) => {
         
         showUI();
     } else if (data.type === "addqueue") {
-        // Server sends this periodically for active item?
-        // Or once?
-        // Looking at main.lua:
-        // SendNUIMessage({ type = "addqueue", item = ..., time = ..., id = ... })
-        // It sends it every second for the active item (index 1).
-        // Wait, only index 1?
-        // "if craftingQueue[1] ~= nil ... SendNUIMessage ... table.remove(craftingQueue, 1)"
-        // So server only processes one at a time.
-        // But if we queue multiple, they are in server memory.
-        // The server only sends update for the CURRENT one being crafted.
-        // So we only know about the one active item?
-        // "SendNUIMessage({ type = "addqueue", item = item, time = recipe.Time, id = id })" is also called on craftStart.
-        
-        // Let's handle it:
-        // If it's a new ID, add it.
-        // If it's an update, update time.
-        
         if (!craftingQueue[data.id]) {
             craftingQueue[data.id] = {
                 item: data.item,
                 time: data.time,
-                totalTime: data.time // Assume initial time is total
+                totalTime: data.time
             };
         } else {
             craftingQueue[data.id].time = data.time;
         }
-        
-        // If time is 0, remove
+
         if (data.time <= 0) {
             Notify.show(`Crafted ${(names[data.item] || data.item).toUpperCase()}`, 'success');
             delete craftingQueue[data.id];
         }
-        
+
         updateQueuePanel();
-    } else if (data.type === "crafting") {
-        // Just a notification or sound?
-        // We handle queue update via addqueue
     } else if (data.type === "forceClose") {
-        // Force close from Lua (escape key handler)
         $("#app-container").fadeOut(200);
         currentRecipe = null;
     }
