@@ -253,7 +253,6 @@ function openWorkbench(val, workbenchType)
     isMenuOpen = true
 
     SetNuiFocus(true, true)
-    SetNuiFocusKeepInput(true) -- Allow game input while NUI is focused
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
     
@@ -337,7 +336,6 @@ function CloseMenu()
 
     -- Force close UI and release focus
     SendNUIMessage({ type = "forceClose" })
-    SetNuiFocusKeepInput(false)
     SetNuiFocus(false, false)
     TriggerScreenblurFadeOut(500)
     print('[dost_crafting] NUI focus released')
@@ -347,23 +345,6 @@ end
 RegisterCommand('closecraft', function()
     CloseMenu()
 end, false)
-
--- Escape key handler thread
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(0)
-        if isMenuOpen then
-            -- With SetNuiFocusKeepInput(true), we can use regular control checks
-            if IsControlJustReleased(0, 322) or IsControlJustReleased(0, 200) or
-               IsControlJustPressed(0, 322) or IsControlJustPressed(0, 200) then
-                print('[dost_crafting] ESC key pressed')
-                CloseMenu()
-            end
-        else
-            Citizen.Wait(500) -- Sleep longer when menu is closed
-        end
-    end
-end)
 
 RegisterNUICallback("craft", function(data, cb)
     local item = data["item"]
@@ -442,7 +423,6 @@ function openWorkbenchMulti(val, workbenchTypes, displayName)
     isMenuOpen = true
 
     SetNuiFocus(true, true)
-    SetNuiFocusKeepInput(true) -- Allow game input while NUI is focused
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
 
