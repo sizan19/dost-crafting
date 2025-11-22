@@ -68,7 +68,7 @@ function showUI() {
 function closeUI() {
     console.log('[dost_crafting] closeUI called');
     $("#app-container").fadeOut(200);
-    $.post('https://dost_crafting/close', JSON.stringify({}))
+    $.post('https://dost-crafting/close', JSON.stringify({}))
         .done(function() { console.log('[dost_crafting] close callback success'); })
         .fail(function() { console.log('[dost_crafting] close callback failed'); });
     currentRecipe = null;
@@ -265,7 +265,7 @@ function startCraft() {
     // The server has a queue system. If we send 5 requests, it adds 5 items to queue.
     
     for (let i = 0; i < qty; i++) {
-        $.post('https://dost_crafting/craft', JSON.stringify({ item: currentRecipe }));
+        $.post('https://dost-crafting/craft', JSON.stringify({ item: currentRecipe }));
     }
     
     Notify.show(`Added ${qty}x to queue`, 'success');
