@@ -57,11 +57,20 @@ function showUI() {
     $("#workbench-title").text(workbenchName || "WORKBENCH");
     renderRecipes();
     updateQueuePanel();
+
+    // Set focus to capture keyboard events
+    setTimeout(() => {
+        document.body.focus();
+        $("#app-container").focus();
+    }, 100);
 }
 
 function closeUI() {
+    console.log('[dost_crafting] closeUI called');
     $("#app-container").fadeOut(200);
-    $.post('https://dost_crafting/close', JSON.stringify({}));
+    $.post('https://dost_crafting/close', JSON.stringify({}))
+        .done(function() { console.log('[dost_crafting] close callback success'); })
+        .fail(function() { console.log('[dost_crafting] close callback failed'); });
     currentRecipe = null;
     $("#details-panel").html(`
         <div class="empty-state">
@@ -322,14 +331,30 @@ function formatTime(seconds) {
 // Event Listeners
 $(document).ready(() => {
     Audio.init();
-    
+
     $("#search-input").on("input", function() {
         renderRecipes($(this).val());
     });
-    
-    $(document).keyup(e => {
-        if (e.key === "Escape") closeUI();
+
+    // Handle escape key - use keydown for immediate response
+    $(document).on('keydown keyup', function(e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[dost_crafting] ESC key detected in JS');
+            closeUI();
+            return false;
+        }
     });
+
+    // Also listen on window level
+    window.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            e.preventDefault();
+            console.log('[dost_crafting] ESC key detected on window');
+            closeUI();
+        }
+    }, true);
 });
 
 // Message Handler
