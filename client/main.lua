@@ -253,6 +253,7 @@ function openWorkbench(val, workbenchType)
     isMenuOpen = true
 
     SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(true) -- Allow game input while NUI is focused
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
     
@@ -336,12 +337,10 @@ function CloseMenu()
 
     -- Force close UI and release focus
     SendNUIMessage({ type = "forceClose" })
-
-    Citizen.SetTimeout(100, function()
-        SetNuiFocus(false, false)
-        TriggerScreenblurFadeOut(500)
-        print('[dost_crafting] NUI focus released')
-    end)
+    SetNuiFocusKeepInput(false)
+    SetNuiFocus(false, false)
+    TriggerScreenblurFadeOut(500)
+    print('[dost_crafting] NUI focus released')
 end
 
 -- Manual close command for testing
@@ -354,11 +353,9 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         if isMenuOpen then
-            -- Use DisabledControlJustPressed because NUI has focus
-            DisableControlAction(0, 322, true) -- Disable ESC
-            DisableControlAction(0, 200, true) -- Disable pause menu
-
-            if IsDisabledControlJustPressed(0, 322) or IsDisabledControlJustPressed(0, 200) then
+            -- With SetNuiFocusKeepInput(true), we can use regular control checks
+            if IsControlJustReleased(0, 322) or IsControlJustReleased(0, 200) or
+               IsControlJustPressed(0, 322) or IsControlJustPressed(0, 200) then
                 print('[dost_crafting] ESC key pressed')
                 CloseMenu()
             end
@@ -445,6 +442,7 @@ function openWorkbenchMulti(val, workbenchTypes, displayName)
     isMenuOpen = true
 
     SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(true) -- Allow game input while NUI is focused
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
 
