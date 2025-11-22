@@ -81,27 +81,29 @@ RegisterServerEvent("dost_crafting:getWorkbenchRecipes")
 AddEventHandler("dost_crafting:getWorkbenchRecipes", function(workbenchType)
     local src = source
     local availableRecipes = {}
-    
-    -- Get all recipes for this workbench type
+    local isUniversal = (workbenchType == 'universal')
+
+    -- Get all recipes for this workbench type (or all recipes if universal)
     for itemName, recipe in pairs(Config.Recipes) do
-        if recipe.WorkbenchType == workbenchType then
+        -- Include recipe if: universal workbench OR matching workbench type
+        if isUniversal or recipe.WorkbenchType == workbenchType then
             -- Create a copy of the recipe
             local recipeData = {}
             for k, v in pairs(recipe) do
                 recipeData[k] = v
             end
-            
+
             -- Check skill requirements
             local craftCheck = CanCraftItem(src, itemName)
-            
+
             -- Set locking flags
             recipeData.SkillLocked = craftCheck.skillLocked
             recipeData.CanCraft = craftCheck.canCraft
-            
+
             availableRecipes[itemName] = recipeData
         end
     end
-    
+
     TriggerClientEvent("dost_crafting:receiveWorkbenchRecipes", src, availableRecipes, workbenchType)
 end)
 
