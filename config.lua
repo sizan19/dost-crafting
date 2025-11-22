@@ -72,15 +72,6 @@ Config = {
             targetIcon = 'fas fa-plus-circle',
             targetLabel = 'Medical Bench'
         },
-        ['universal'] = {
-            name = 'Universal Workbench',
-            description = 'Access all crafting recipes',
-            blipColor = 5,
-            blipSprite = 566,
-            prop = 'gr_prop_gr_bench_02a',
-            targetIcon = 'fas fa-cogs',
-            targetLabel = 'Universal Crafting'
-        },
         -- ['electronics'] = {
         --     name = 'Electronics Workbench',
         --     description = 'Craft electronic devices',
@@ -124,16 +115,7 @@ Config = {
             blip = false,
             radius = 3.0,
             workbenchType = 'medical'
-        },
-        -- Universal Workbench Example - Shows ALL crafting recipes from all categories
-        -- {
-        --     coords = vector3(0.0, 0.0, 0.0), -- Replace with your desired coordinates
-        --     heading = 0.0,
-        --     jobs = {},
-        --     blip = true,
-        --     radius = 3.0,
-        --     workbenchType = 'universal'
-        -- }
+        }
     },
     
     Recipes = {

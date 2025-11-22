@@ -311,6 +311,84 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
 end)
 
+-- ============================================
+-- EXPORTS FOR EXTERNAL SCRIPTS (Housing, etc.)
+-- ============================================
+
+-- Open crafting menu with specific categories
+-- Usage: exports['dost_crafting']:OpenCraftingMenu('weapons') -- single type
+-- Usage: exports['dost_crafting']:OpenCraftingMenu({'weapons', 'survival'}) -- multiple types
+-- Usage: exports['dost_crafting']:OpenCraftingMenu('all') -- all categories
+function OpenCraftingMenu(workbenchTypes)
+    if type(workbenchTypes) == 'string' then
+        if workbenchTypes == 'all' then
+            -- Convert to table with all types
+            workbenchTypes = {'weapons', 'survival', 'medical'}
+        else
+            -- Single type passed as string
+            workbenchTypes = {workbenchTypes}
+        end
+    end
+
+    TriggerServerEvent("dost_crafting:getMultiWorkbenchRecipes", workbenchTypes)
+end
+
+exports('OpenCraftingMenu', OpenCraftingMenu)
+
+-- Event handler for external scripts
+RegisterNetEvent('dost_crafting:openCraftingMenu')
+AddEventHandler('dost_crafting:openCraftingMenu', function(workbenchTypes)
+    OpenCraftingMenu(workbenchTypes)
+end)
+
+-- Event to receive multi-workbench recipes
+RegisterNetEvent("dost_crafting:receiveMultiWorkbenchRecipes")
+AddEventHandler("dost_crafting:receiveMultiWorkbenchRecipes", function(recipes, workbenchTypes)
+    local displayName = "Crafting Station"
+
+    if #workbenchTypes == 1 then
+        local config = Config.WorkbenchTypes[workbenchTypes[1]]
+        if config then
+            displayName = config.name
+        end
+    else
+        displayName = "Universal Crafting"
+    end
+
+    openWorkbenchMulti({recipes = recipes}, workbenchTypes, displayName)
+end)
+
+-- Open workbench UI for multiple types
+function openWorkbenchMulti(val, workbenchTypes, displayName)
+    local inv = {}
+    local recipes = val.recipes or {}
+    currentWorkbenchType = workbenchTypes
+
+    SetNuiFocus(true, true)
+    TriggerScreenblurFadeIn(500)
+    local player = QBCore.Functions.GetPlayerData()
+
+    local levels = {}
+
+    for _, v in pairs(player.items) do
+        inv[v.name] = v.amount
+    end
+
+    SendNUIMessage({
+        type = "open",
+        recipes = recipes,
+        names = labels,
+        level = levels,
+        inventory = inv,
+        job = job,
+        grade = grade,
+        hidecraft = Config.HideWhenCantCraft,
+        categories = Config.Categories,
+        workbenchType = type(workbenchTypes) == 'table' and workbenchTypes[1] or workbenchTypes,
+        workbenchName = displayName
+    })
+end
+
 -- Legacy text drawing (kept for compatibility)
 function DrawText3D(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
