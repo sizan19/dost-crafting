@@ -76,17 +76,15 @@ AddEventHandler("dost_crafting:craft", function(item, retrying)
     craft(src, item, retrying)
 end)
 
--- Event to get available recipes for a workbench
+-- Event to get available recipes for a single workbench type
 RegisterServerEvent("dost_crafting:getWorkbenchRecipes")
 AddEventHandler("dost_crafting:getWorkbenchRecipes", function(workbenchType)
     local src = source
     local availableRecipes = {}
-    local isUniversal = (workbenchType == 'universal')
 
-    -- Get all recipes for this workbench type (or all recipes if universal)
+    -- Get all recipes for this workbench type
     for itemName, recipe in pairs(Config.Recipes) do
-        -- Include recipe if: universal workbench OR matching workbench type
-        if isUniversal or recipe.WorkbenchType == workbenchType then
+        if recipe.WorkbenchType == workbenchType then
             -- Create a copy of the recipe
             local recipeData = {}
             for k, v in pairs(recipe) do
@@ -105,6 +103,46 @@ AddEventHandler("dost_crafting:getWorkbenchRecipes", function(workbenchType)
     end
 
     TriggerClientEvent("dost_crafting:receiveWorkbenchRecipes", src, availableRecipes, workbenchType)
+end)
+
+-- Event to get recipes for multiple workbench types (for external scripts like housing)
+RegisterServerEvent("dost_crafting:getMultiWorkbenchRecipes")
+AddEventHandler("dost_crafting:getMultiWorkbenchRecipes", function(workbenchTypes)
+    local src = source
+    local availableRecipes = {}
+
+    -- Ensure workbenchTypes is a table
+    if type(workbenchTypes) ~= 'table' then
+        workbenchTypes = {workbenchTypes}
+    end
+
+    -- Create a lookup table for faster checking
+    local typeMap = {}
+    for _, wType in ipairs(workbenchTypes) do
+        typeMap[wType] = true
+    end
+
+    -- Get all recipes matching any of the workbench types
+    for itemName, recipe in pairs(Config.Recipes) do
+        if typeMap[recipe.WorkbenchType] then
+            -- Create a copy of the recipe
+            local recipeData = {}
+            for k, v in pairs(recipe) do
+                recipeData[k] = v
+            end
+
+            -- Check skill requirements
+            local craftCheck = CanCraftItem(src, itemName)
+
+            -- Set locking flags
+            recipeData.SkillLocked = craftCheck.skillLocked
+            recipeData.CanCraft = craftCheck.canCraft
+
+            availableRecipes[itemName] = recipeData
+        end
+    end
+
+    TriggerClientEvent("dost_crafting:receiveMultiWorkbenchRecipes", src, availableRecipes, workbenchTypes)
 end)
 
 -- -- XP Books for skill system
