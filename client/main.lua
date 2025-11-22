@@ -329,13 +329,25 @@ end)
 
 -- Close menu function (used by NUI callback and escape key)
 function CloseMenu()
-    if not isMenuOpen then return end
+    print('[dost_crafting] CloseMenu called, isMenuOpen: ' .. tostring(isMenuOpen))
 
     isMenuOpen = false
-    TriggerScreenblurFadeOut(500)
-    SetNuiFocus(false, false)
     currentWorkbenchType = nil
+
+    -- Force close UI and release focus
+    SendNUIMessage({ type = "forceClose" })
+
+    Citizen.SetTimeout(100, function()
+        SetNuiFocus(false, false)
+        TriggerScreenblurFadeOut(500)
+        print('[dost_crafting] NUI focus released')
+    end)
 end
+
+-- Manual close command for testing
+RegisterCommand('closecraft', function()
+    CloseMenu()
+end, false)
 
 -- Escape key handler thread
 Citizen.CreateThread(function()
@@ -347,8 +359,8 @@ Citizen.CreateThread(function()
             DisableControlAction(0, 200, true) -- Disable pause menu
 
             if IsDisabledControlJustPressed(0, 322) or IsDisabledControlJustPressed(0, 200) then
+                print('[dost_crafting] ESC key pressed')
                 CloseMenu()
-                SendNUIMessage({ type = "forceClose" })
             end
         else
             Citizen.Wait(500) -- Sleep longer when menu is closed
