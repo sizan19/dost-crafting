@@ -389,6 +389,43 @@ function openWorkbenchMulti(val, workbenchTypes, displayName)
     })
 end
 
+-- ============================================
+-- TEST COMMANDS
+-- ============================================
+
+-- Test command: /testcraft [type]
+-- Usage: /testcraft all | /testcraft weapons | /testcraft survival | /testcraft medical
+RegisterCommand('testcraft', function(source, args)
+    local craftType = args[1] or 'all'
+
+    if craftType == 'all' then
+        OpenCraftingMenu('all')
+    elseif craftType == 'weapons' or craftType == 'survival' or craftType == 'medical' then
+        OpenCraftingMenu(craftType)
+    else
+        QBCore.Functions.Notify('Usage: /testcraft [all|weapons|survival|medical]', 'error')
+    end
+end, false)
+
+-- Test command for multiple types: /testcraftmulti weapons,survival
+RegisterCommand('testcraftmulti', function(source, args)
+    if not args[1] then
+        QBCore.Functions.Notify('Usage: /testcraftmulti weapons,survival,medical', 'error')
+        return
+    end
+
+    local types = {}
+    for type in string.gmatch(args[1], '([^,]+)') do
+        table.insert(types, type)
+    end
+
+    if #types > 0 then
+        OpenCraftingMenu(types)
+    else
+        QBCore.Functions.Notify('No valid types provided', 'error')
+    end
+end, false)
+
 -- Legacy text drawing (kept for compatibility)
 function DrawText3D(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
