@@ -5,6 +5,7 @@ local job = ""
 local grade = 0
 local currentWorkbenchType = nil
 local spawnedWorkbenches = {}
+local isMenuOpen = false
 
 -- Initialize system
 Citizen.CreateThread(function()
@@ -249,7 +250,8 @@ function openWorkbench(val, workbenchType)
     local inv = {}
     local recipes = val.recipes or {}
     currentWorkbenchType = workbenchType
-    
+    isMenuOpen = true
+
     SetNuiFocus(true, true)
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
@@ -321,10 +323,33 @@ end)
 
 -- NUI Callbacks
 RegisterNUICallback("close", function(data, cb)
+    CloseMenu()
+    cb('ok')
+end)
+
+-- Close menu function (used by NUI callback and escape key)
+function CloseMenu()
+    if not isMenuOpen then return end
+
+    isMenuOpen = false
     TriggerScreenblurFadeOut(500)
     SetNuiFocus(false, false)
     currentWorkbenchType = nil
-    cb('ok')
+end
+
+-- Escape key handler thread
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if isMenuOpen then
+            if IsControlJustPressed(0, 322) or IsControlJustPressed(0, 200) then -- ESC key
+                CloseMenu()
+                SendNUIMessage({ type = "forceClose" })
+            end
+        else
+            Citizen.Wait(500) -- Sleep longer when menu is closed
+        end
+    end
 end)
 
 RegisterNUICallback("craft", function(data, cb)
@@ -401,6 +426,7 @@ function openWorkbenchMulti(val, workbenchTypes, displayName)
     local inv = {}
     local recipes = val.recipes or {}
     currentWorkbenchType = workbenchTypes
+    isMenuOpen = true
 
     SetNuiFocus(true, true)
     TriggerScreenblurFadeIn(500)

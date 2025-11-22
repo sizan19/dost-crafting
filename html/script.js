@@ -385,5 +385,9 @@ window.addEventListener('message', (event) => {
     } else if (data.type === "crafting") {
         // Just a notification or sound?
         // We handle queue update via addqueue
+    } else if (data.type === "forceClose") {
+        // Force close from Lua (escape key handler)
+        $("#app-container").fadeOut(200);
+        currentRecipe = null;
     }
 });
