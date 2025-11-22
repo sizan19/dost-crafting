@@ -47,7 +47,6 @@ function InitializeWorkbenches()
         local workbenchConfig = Config.WorkbenchTypes[primaryType]
 
         if not workbenchConfig then
-            print('[dost_crafting] Warning: No config found for workbench type: ' .. tostring(primaryType))
             goto continue
         end
 
@@ -255,10 +254,8 @@ function openWorkbench(val, workbenchType)
     SetNuiFocus(true, true)
     TriggerScreenblurFadeIn(500)
     local player = QBCore.Functions.GetPlayerData()
-    
-    -- No levels needed - skill system only
     local levels = {}
-    
+
     for _, v in pairs(player.items) do
         inv[v.name] = v.amount
     end
@@ -327,24 +324,14 @@ RegisterNUICallback("close", function(data, cb)
     cb('ok')
 end)
 
--- Close menu function (used by NUI callback and escape key)
+-- Close menu function
 function CloseMenu()
-    print('[dost_crafting] CloseMenu called, isMenuOpen: ' .. tostring(isMenuOpen))
-
     isMenuOpen = false
     currentWorkbenchType = nil
-
-    -- Force close UI and release focus
     SendNUIMessage({ type = "forceClose" })
     SetNuiFocus(false, false)
     TriggerScreenblurFadeOut(500)
-    print('[dost_crafting] NUI focus released')
 end
-
--- Manual close command for testing
-RegisterCommand('closecraft', function()
-    CloseMenu()
-end, false)
 
 RegisterNUICallback("craft", function(data, cb)
     local item = data["item"]
@@ -447,65 +434,3 @@ function openWorkbenchMulti(val, workbenchTypes, displayName)
     })
 end
 
--- ============================================
--- TEST COMMANDS
--- ============================================
-
--- Test command: /testcraft [type]
--- Usage: /testcraft all | /testcraft weapons | /testcraft survival | /testcraft medical
-RegisterCommand('testcraft', function(source, args)
-    local craftType = args[1] or 'all'
-
-    if craftType == 'all' then
-        OpenCraftingMenu('all')
-    elseif craftType == 'weapons' or craftType == 'survival' or craftType == 'medical' then
-        OpenCraftingMenu(craftType)
-    else
-        QBCore.Functions.Notify('Usage: /testcraft [all|weapons|survival|medical]', 'error')
-    end
-end, false)
-
--- Test command for multiple types: /testcraftmulti weapons,survival
-RegisterCommand('testcraftmulti', function(source, args)
-    if not args[1] then
-        QBCore.Functions.Notify('Usage: /testcraftmulti weapons,survival,medical', 'error')
-        return
-    end
-
-    local types = {}
-    for type in string.gmatch(args[1], '([^,]+)') do
-        table.insert(types, type)
-    end
-
-    if #types > 0 then
-        OpenCraftingMenu(types)
-    else
-        QBCore.Functions.Notify('No valid types provided', 'error')
-    end
-end, false)
-
--- Legacy text drawing (kept for compatibility)
-function DrawText3D(x, y, z, text)
-    local onScreen, _x, _y = World3dToScreen2d(x, y, z)
-    local px, py, pz = table.unpack(GetGameplayCamCoord())
-    local dist = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)
-    local scale = ((1 / dist) * 2) * (1 / GetGameplayCamFov()) * 100
-
-    if onScreen then
-        SetTextColour(255, 255, 255, 255)
-        SetTextScale(0.0 * scale, 0.35 * scale)
-        SetTextFont(4)
-        SetTextProportional(1)
-        SetTextCentre(true)
-        SetTextDropshadow(1, 1, 1, 1, 255)
-
-        BeginTextCommandWidth("STRING")
-        AddTextComponentString(text)
-        local height = GetTextScaleHeight(0.55 * scale, 4)
-        local width = EndTextCommandGetWidth(4)
-
-        SetTextEntry("STRING")
-        AddTextComponentString(text)
-        EndTextCommandDisplayText(_x, _y)
-    end
-end
