@@ -342,7 +342,11 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         if isMenuOpen then
-            if IsControlJustPressed(0, 322) or IsControlJustPressed(0, 200) then -- ESC key
+            -- Use DisabledControlJustPressed because NUI has focus
+            DisableControlAction(0, 322, true) -- Disable ESC
+            DisableControlAction(0, 200, true) -- Disable pause menu
+
+            if IsDisabledControlJustPressed(0, 322) or IsDisabledControlJustPressed(0, 200) then
                 CloseMenu()
                 SendNUIMessage({ type = "forceClose" })
             end
