@@ -1,0 +1,544 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0f111a;
+    --bg-panel: #161925;
+    --bg-card: #1e2230;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --border: #2d3748;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: transparent;
+    overflow: hidden;
+    color: var(--text-main);
+}
+
+/* Main Wrapper */
+.main-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    /* Right align */
+    background: rgba(0, 0, 0, 0.4);
+    /* Dim background */
+}
+
+/* Sidebar */
+.crafting-sidebar {
+    width: 500px;
+    height: 100%;
+    background: var(--bg-dark);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+    border-left: 1px solid var(--border);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Header */
+.sidebar-header {
+    padding: 2rem;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+}
+
+.title-section h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+.workbench-name {
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.search-section {
+    margin-top: 1.5rem;
+    position: relative;
+    display: flex;
+    gap: 10px;
+}
+
+#search-input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 10px 15px;
+    border-radius: 6px;
+    color: var(--text-main);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+}
+
+#search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.filter-icon {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-icon:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Recipe Grid */
+.recipe-grid-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.5rem;
+}
+
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.recipe-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.recipe-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.recipe-card.selected {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+.recipe-icon {
+    width: 64px;
+    height: 64px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 8px;
+    transition: filter 0.3s;
+}
+
+.recipe-name {
+    font-size: 0.75rem;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-muted);
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recipe-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--bg-dark);
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+/* Locked State */
+.recipe-card.locked {
+    opacity: 0.7;
+    border-color: transparent;
+}
+
+.recipe-card.locked .recipe-icon {
+    filter: grayscale(100%) opacity(0.6);
+}
+
+.recipe-card.locked:hover {
+    border-color: var(--danger);
+}
+
+/* Details Panel */
+.details-panel {
+    height: 380px;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    gap: 1rem;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    opacity: 0.2;
+}
+
+.detail-header {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.detail-title h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-main);
+}
+
+.detail-meta {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.meta-item i {
+    margin-right: 5px;
+    color: var(--primary);
+}
+
+.ingredients-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    padding-right: 5px;
+}
+
+.ingredient-row {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: var(--bg-dark);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+}
+
+.ingredient-row.missing {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.ingredient-row.has-enough {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.ing-icon {
+    width: 32px;
+    height: 32px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+}
+
+.ing-name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.ing-count {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.ing-count.red {
+    color: var(--danger);
+}
+
+.ing-count.green {
+    color: var(--success);
+}
+
+/* Action Area */
+.action-area {
+    display: flex;
+    gap: 10px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    background: var(--bg-dark);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.qty-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.qty-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.qty-input {
+    width: 40px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    text-align: center;
+    color: var(--text-main);
+    font-weight: 600;
+    -moz-appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.craft-btn {
+    flex: 1;
+    background: var(--primary);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.craft-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+.craft-btn:disabled {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+/* Queue Panel */
+.queue-panel {
+    position: absolute;
+    right: 505px;
+    /* Left of sidebar */
+    top: 20px;
+    width: 280px;
+    background: var(--bg-panel);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: none;
+    /* Hidden by default */
+}
+
+.queue-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.queue-count {
+    background: var(--primary);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+.queue-list {
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.queue-item {
+    background: var(--bg-dark);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.q-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 2;
+}
+
+.q-name {
+    font-weight: 500;
+}
+
+.q-time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.q-progress-bg {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    position: relative;
+    z-index: 2;
+}
+
+.q-progress-bar {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 1s linear;
+}
+
+/* Notifications */
+.notification-zone {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.notification {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+    min-width: 300px;
+}
+
+.notification.success i {
+    color: var(--success);
+}
+
+.notification.error i {
+    color: var(--danger);
+}
+
+.notification.warning i {
+    color: var(--warning);
+}
+
+.notification.info i {
+    color: var(--primary);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
