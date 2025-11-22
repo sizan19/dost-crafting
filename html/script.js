@@ -27,27 +27,45 @@ const Audio = {
 const Notify = {
     show(msg, type = 'info') {
         const container = document.getElementById('notifications');
-        const div = document.createElement('div');
-        div.className = `notification ${type}`;
-        
+        const id = 'toast-' + Date.now();
+
         const icons = {
-            success: 'fas fa-check-circle',
-            error: 'fas fa-times-circle',
-            warning: 'fas fa-exclamation-triangle',
-            info: 'fas fa-info-circle'
+            success: 'fa-check-circle',
+            error: 'fa-times-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
         };
-        
-        div.innerHTML = `<i class="${icons[type]}"></i> <span>${msg}</span>`;
-        container.appendChild(div);
-        
+
+        const colors = {
+            success: 'text-success',
+            error: 'text-danger',
+            warning: 'text-warning',
+            info: 'text-primary'
+        };
+
+        const toastHtml = `
+            <div id="${id}" class="toast align-items-center border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center gap-2">
+                        <i class="fas ${icons[type]} ${colors[type]}"></i>
+                        <span>${msg}</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', toastHtml);
+
+        const toastEl = document.getElementById(id);
+        const toast = new bootstrap.Toast(toastEl);
+
         if (type === 'success') Audio.play('success');
         if (type === 'error') Audio.play('error');
-        
-        setTimeout(() => {
-            div.style.opacity = '0';
-            div.style.transform = 'translateY(-20px)';
-            setTimeout(() => div.remove(), 300);
-        }, 3000);
+
+        toast.show();
+
+        toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
     }
 };
 
